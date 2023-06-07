@@ -1,14 +1,8 @@
-package com.example.springsecurityoauth2;
-
+package oauth2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -20,11 +14,16 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/").permitAll();
-                    auth.requestMatchers("/favicon.ico").permitAll();
                     auth.anyRequest().authenticated(); }
                 )
                 .oauth2Login(withDefaults())
-                //.formLogin(withDefaults())
+                .logout(logout -> logout
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
+
+                //.formLogin(withDefaults()) // the spring login form in addition to the oauth2 login
                 .build();
     }
 
